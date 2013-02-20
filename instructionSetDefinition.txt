@@ -1,5 +1,5 @@
 10-Bit Instruction Set Architecture
-CS232
+CS318
 
 Robert Vail
 Thomas Wagner
@@ -40,45 +40,52 @@ ISA definition:
 
 [ 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 ]
 
-[3-bit opcode]  [7-bits to work with]
+ [3-bit opcode]  [7-bits to work with]
 
 
 8 Instructions:
    3-bit opcodes: ADD, LD, STR, BEQ, SLT, AND, HLT, T-B-D.
 
-Add -> ADD [4 bit $register(1-16)] [3 bit reference to $register(1-8)]
+Add -> 
+  ADD [4 bit $register(1-16)] [3 bit reference to $register(1-8)]
 
        //3 bit register is one of 8 hardcoded 'add registers'
 
 
 
-Load -> LD [1 bit condition <memory address or register address> ] [6 bit offset from base address]
+Load -> 
+  LD [1 bit condition <memory address or register address> ] [6 bit offset from base address]
 
 
 
-Store -> STR [1 bit condition <memory address or register address>] [6 bit address to store]
+Store -> 
+  STR [1 bit condition <memory address or register address>] [6 bit address to store]
 
        // STR always stores to a set register, which points to a memory address...
 
 
 
-Branch if equal -> BEQ [1 bit condition <compare to $zero or $otherSetRegister] [4 bit register to compare] [2 bit $goto register]
+Branch if equal -> 
+  BEQ [1 bit condition <compare to $zero or $otherSetRegister] [4 bit register to compare] [2 bit $goto register]
 
        // first argument compares to either $zero or some other hardcoded value, and goes to one of 4 hardcoded 'labels'
 
 
 
-Shift left -> SLT [4 bit shift amount] [3 bit $register to shift]
+Shift left -> 
+  SLT [4 bit shift amount] [3 bit $register to shift]
 
 
 
-And -> AND [4 bit $register] [3 bit register to add with]
+And -> 
+  AND [4 bit $register] [3 bit register to add with]
 
        //the 3 bit register is some variable we are working with. result is stored in a reserved 'and register'
 
 
 
-Halt -> HLT []
+Halt -> 
+  HLT []
 
        //not sure what to put here but we have to have a half register...
 
@@ -89,7 +96,7 @@ Halt -> HLT []
    I omitted the increment instruction because I re-read the project sheet and
    apparently we need a halt register, and it would have put us over 8 instructions.
    
-   How I have the arguments set up now is that the first argument is :
+   How I have the arguments set up now is:
    		first the 1 bit conditional (if present), then the 4-bit register (if present), 
    then the 3-bit register(1-8 range) (if present), then the 6-bit address (if present), 
    then the 2-bit goto address (only in BEQ). I don't know if this is what we want, I just
