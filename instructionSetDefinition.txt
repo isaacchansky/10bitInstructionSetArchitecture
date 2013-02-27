@@ -54,21 +54,19 @@ Add ->
 
 
 Load -> 
-  LD [1 bit condition <memory address or register address> ] [6 bit offset from base address]
+  LD [1 bit condition <memory or stack> ] [6 bit offset from base address]
 
 
 
 Store -> 
-  STR [1 bit condition <memory address or register address>] [6 bit address to store]
+  STR [1 bit condition <memory or stack >] [6 bit address to store]
 
        // STR always stores to a set register, which points to a memory address...
 
 
 
 Branch if equal -> 
-  BEQ [1 bit condition <compare to $zero or $otherSetRegister] [4 bit register to compare] [2 bit $goto register]
-
-       // first argument compares to either $zero or some other hardcoded value, and goes to one of 4 hardcoded 'labels'
+  BEQ [1 bit condition <compare to $zero or $otherSetRegister] [ 1 bits for register to compare to ][5 bits to specify where we are jumping]
 
 
 

@@ -2,24 +2,24 @@ Pseudo code loosely based on the proposed ISA for
 our implementation of the recursive factorial problem 
 
 the registers are defined as followed:
-$sp ->  stack pointer
-$t1 ->  temp register
-$t2 ->  temp register
-$t3 ->  temp register
-$t4 ->  temp register
-$t5 ->  temp register
-$t6 ->  temp register
-$and ->  AND register
-$zero   ->  integer 0
-$one    ->  integer 1
-$negone ->  integer -1
-$four   ->  integer 4
+$t1     ->  stack pointer
+$t2     ->  temp register
+$t3     ->  temp register
+$t4     ->  temp register
+$store  ->  store register
+$beq1   ->  beq register
+$beq2   ->  beq register
+$beq3   ->  beq register
+$s1     ->  
+$s2     ->  
+$s3     ->  
+$four   ->  4 
 $load   ->  implicit load register
-$gtF    ->  go-to register, hardcoded with F: line #
-$gtR    ->  go-to register, hardcoded with R: line #
-$gtM    ->  go-to register, hardcoded with M: line #
+$negone ->  -1
+$zero   ->  0
+$one    ->  1
     
-    #$sp-$t7 are the registers refered to in the ADD, SHIFT instructions
+    *** $sp-$t7 are the registers refered to in the ADD, SHIFT instructions
 
 
  '''
@@ -124,3 +124,41 @@ END_LOOP: LOAD 1 $zero       #load what is at the stack pointer (a line #
 HALT:   HLT $h
 
 
+
+
+
+'''
+ initial recursion setup pseudocode:
+
+ -initialize counter
+-A: increment counter
+-add looping label address to stack
+-beq counter != num A
+
+ '''
+
+
+ ADD $four $sp       #increment stack pointer by 4
+ 
+ STORE 1 $h            #push $h, the register storing the halt 
+                        label/line number onto stack
+
+G- ADD $num $t2        #'store' the initial parameter 'num' into tempreg
+
+ADD $zero $t3        #initialize function counter, goes to 'num'
+
+ITER: ADD $one $t3     #increment counter
+
+ADD $four $sp       #increment stack pointer by 4
+
+STORE 1 $UNRAVEL
+ADD $t2 $store      #add store to t2
+BEQ 1 $t6 UNRAVEL:
+BEQ $zero $zero ITER:
+
+
+
+
+
+
+HALT:   HLT $h
