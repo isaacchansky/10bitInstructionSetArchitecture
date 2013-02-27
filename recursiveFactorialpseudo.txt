@@ -9,7 +9,7 @@ $t3 ->  temp register
 $t4 ->  temp register
 $t5 ->  temp register
 $t6 ->  temp register
-$t7 ->  AND register
+$and ->  AND register
 $zero   ->  integer 0
 $one    ->  integer 1
 $negone ->  integer -1
@@ -41,13 +41,15 @@ $gtM    ->  go-to register, hardcoded with M: line #
 ADD $num $t1        #'store' the initial parameter 'num' into the 
                         first add register
 
-ADD $one $t6        #initialize function counter, goes to 'num'
+ADD $zero $t6        #initialize function counter, goes to 'num'
 
 ITER: ADD $one $t6     #increment counter
 
-STORE 1 $loopinglabelAddr
+ADD $four $sp       #increment stack pointer by 4
 
-BEQ $t1 $t6 B:
+STORE 1 $UNRAVEL
+
+BEQ $t1 $t6 UNRAVEL:
 BEQ $zero $zero ITER:
 
 
@@ -65,40 +67,37 @@ C: if workingproduct == functionCounter; END
  
 
  
- ADD $zero $t3       #initialize working product to zero
 
- ADD $one $t5        #initialize counter, goes to 'num'
 
-UNRAVEL: BEQ $t1 $t5 HALT   #if num == counter, halt... dont think we need this
-                                because of how recursion works...
- 
-
+UNRAVEL: 
  ADD $one $t2       #initialize the adder-register for multiplying (what we 
                         and with)
 
  ADD $zero $t4       #initialize counter to one (refers to bit-place) 
-                        ***Want to have a way to 'set to zero'... 
+                        **issue: Want to have a way to 'set to zero'... 
 
 
 
-MULTIPLY: AND $t2 $t1     #stored in $t7, if that is 0, end...
+
+
+MULTIPLY: AND $t2 $t1     #stored in $and, if that is 0, end...
 
 #do our comparison, then increment stuff
-
- SLT $one $t2       #shift adder-register (ex. 0001 -> 0010)
-
+ 
  ADD $one $t4       #increment multiply counter
  
- BEQ $zero $t7 BIT_STUFF:   #if bit present, multiply    
+ BEQ $zero $and BIT_STUFF:   #if bit present, multiply    
+
+ SLT $one $t2       #shift adder-register (ex. 0001 -> 0010) 
+
+ BEQ $zero $and MULTIPLY:   #if no bit present, don't do bit stuff
+
+ BEQ $t2 $zero END_LOOP:    #if we have gone through each bit, return iteration
 
  
 
- BEQ $zero $t7 MULTIPLY:   #if no bit present, don't do bit stuff
-
- BEQ $t2 $zero RETURN:    #if we have gone through each bit, return iteration
  
 
- 
 
 BIT_STUFF: ADD $t1 $t3      # add t1(num) to t3(working product)
  
@@ -112,16 +111,15 @@ BIT_STUFF: ADD $t1 $t3      # add t1(num) to t3(working product)
 
 
 
-RETURN: LOAD 1 $zero       #load what is at the stack pointer (a line # 
-                      register, usually B, unless H)
-
-    ADD $one $t5    #pretty sure this is unneccessary because we end via 
-                        recursion... 
+END_LOOP: LOAD 1 $zero       #load what is at the stack pointer (a line # 
+                      register, usually UNRAVEL, unless HALT)
 
 
  BEQ $zero $zero $load  #branch to whatever line in the load register
 
  
+
+
 
 HALT:   HLT $h
 
