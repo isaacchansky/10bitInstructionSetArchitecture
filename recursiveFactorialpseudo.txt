@@ -1,0 +1,128 @@
+Pseudo code loosely based on the proposed ISA for 
+our implementation of the recursive factorial problem 
+
+the registers are defined as followed:
+$sp ->  stack pointer
+$t1 ->  temp register
+$t2 ->  temp register
+$t3 ->  temp register
+$t4 ->  temp register
+$t5 ->  temp register
+$t6 ->  temp register
+$t7 ->  AND register
+$zero   ->  integer 0
+$one    ->  integer 1
+$negone ->  integer -1
+$four   ->  integer 4
+$load   ->  implicit load register
+$gtF    ->  go-to register, hardcoded with F: line #
+$gtR    ->  go-to register, hardcoded with R: line #
+$gtM    ->  go-to register, hardcoded with M: line #
+    
+    #$sp-$t7 are the registers refered to in the ADD, SHIFT instructions
+
+
+ '''
+ initial recursion setup pseudocode:
+
+ -initialize counter
+-A: increment counter
+-add looping label address to stack
+-beq counter != num A
+
+ '''
+
+
+ ADD $four $sp       #increment stack pointer by 4
+ 
+ STORE $h            #push $h, the register storing the halt 
+                        label/line number onto stack
+
+ADD $num $t1        #'store' the initial parameter 'num' into the 
+                        first add register
+
+ADD $one $t6        #initialize function counter, goes to 'num'
+
+ITER: ADD $one $t6     #increment counter
+
+STORE 1 $loopinglabelAddr
+
+BEQ $t1 $t6 B:
+BEQ $zero $zero ITER:
+
+
+
+'''
+unravel pseudocode:
+workingProduct == 0
+functionCounter == 1
+C: if workingproduct == functionCounter; END
+#multiply by function counter
+
+
+'''
+
+ 
+
+ 
+ ADD $zero $t3       #initialize working product to zero
+
+ ADD $one $t5        #initialize counter, goes to 'num'
+
+UNRAVEL: BEQ $t1 $t5 HALT   #if num == counter, halt... dont think we need this
+                                because of how recursion works...
+ 
+
+ ADD $one $t2       #initialize the adder-register for multiplying (what we 
+                        and with)
+
+ ADD $zero $t4       #initialize counter to one (refers to bit-place) 
+                        ***Want to have a way to 'set to zero'... 
+
+
+
+MULTIPLY: AND $t2 $t1     #stored in $t7, if that is 0, end...
+
+#do our comparison, then increment stuff
+
+ SLT $one $t2       #shift adder-register (ex. 0001 -> 0010)
+
+ ADD $one $t4       #increment multiply counter
+ 
+ BEQ $zero $t7 BIT_STUFF:   #if bit present, multiply    
+
+ 
+
+ BEQ $zero $t7 MULTIPLY:   #if no bit present, don't do bit stuff
+
+ BEQ $t2 $zero RETURN:    #if we have gone through each bit, return iteration
+ 
+
+ 
+
+BIT_STUFF: ADD $t1 $t3      # add t1(num) to t3(working product)
+ 
+ ADD $negone $t4    #decrement multiply counter
+ 
+ BEQ $zero $t4 MULTIPLY    #branch back to start if counter is at 0 (we 
+                                finished multiplying)
+ BEQ $zero $zero BIT_STUFF  #branch to bitwise loop otherwise
+
+
+
+
+
+RETURN: LOAD 1 $zero       #load what is at the stack pointer (a line # 
+                      register, usually B, unless H)
+
+    ADD $one $t5    #pretty sure this is unneccessary because we end via 
+                        recursion... 
+
+
+ BEQ $zero $zero $load  #branch to whatever line in the load register
+
+ 
+
+HALT:   HLT $h
+
+
