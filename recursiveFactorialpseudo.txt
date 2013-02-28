@@ -160,7 +160,7 @@ BITLOOP:
 SLT $four $beq3     # clear/ensure that beq is 0
 ADD $beq3 $t2       # set beq3 to whatever $t2 is, break/branch if $t2 is zero 
                     # because we're done looking at bits
-LOAD 0 MEMORYADDRESS_ENDITER   #have to load line number of ENDITER from memory address...
+LOAD 0 MEMORYADDRESS_UNRAVEL   #have to load line number of UNRAVEL from memory address...
 
 BEQ 0 1 $load       #break if we have shifted enought to zero out, else...
 
@@ -185,7 +185,8 @@ ADD $t3 $beq1       #add that to the working product
 
 SLT $four $beq3     #get a zero in beq3 to use for a jump
 
-BEQ 0 1 $load
+BEQ 0 1 $load       #branches back to BITLOOP
+
 
 HALT:   
 
@@ -255,7 +256,7 @@ SLT $four $beq1
 BITLOOP:
 SLT $four $beq3     
 ADD $beq3 $t2                         
-LOAD 0 MEMORYADDRESS_ENDITER   
+LOAD 0 MEMORYADDRESS_UNRAVEL  
 BEQ 0 1 $load       
 AND $t2 $t4                         
 ADD $beq1 $t4       
