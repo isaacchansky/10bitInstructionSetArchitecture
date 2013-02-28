@@ -146,9 +146,9 @@ GLOBALS:
 ==========================================
 
 
-SLT $four $beq2     #clear beq2 essentailly used as temp variable - bit position counter
+SLL $four $beq2     #clear beq2 essentailly used as temp variable - bit position counter
 
-SLT $four $beq1     #clear beq1
+SLL $four $beq1     #clear beq1
 
 
 ===========================================
@@ -157,7 +157,7 @@ loops through each bit sees if we have a 1 there
 
 BITLOOP:
 
-SLT $four $beq3     # clear/ensure that beq is 0
+SLL $four $beq3     # clear/ensure that beq is 0
 ADD $beq3 $t2       # set beq3 to whatever $t2 is, break/branch if $t2 is zero 
                     # because we're done looking at bits
 LOAD 0 MEMORYADDRESS_UNRAVEL   #have to load line number of UNRAVEL from memory address...
@@ -169,9 +169,9 @@ AND $t2 $t4         # and with $t4, not $t3(working product) because $t4 is gene
 
 ADD $beq1 $t4       #store t4 duplicate in beq1
 
-SLT $beq2 $beq1     #shift beq1 by bit position counter to get what we're adding to the working product
+SLL $beq2 $beq1     #shift beq1 by bit position counter to get what we're adding to the working product
 
-SLT $one $t2        # shift bit position variable left by one 
+SLL $one $t2        # shift bit position variable left by one 
 
 ADD $(t7)beq2 $one  # increment bit counter
 
@@ -183,7 +183,7 @@ BEQ 0 1 $load       #comparing $zero and $beq3 (which is where we put result of 
 
 ADD $t3 $beq1       #add that to the working product
 
-SLT $four $beq3     #get a zero in beq3 to use for a jump
+SLL $four $beq3     #get a zero in beq3 to use for a jump
 
 BEQ 0 1 $load       #branches back to BITLOOP
 
@@ -250,23 +250,23 @@ LOAD 1  $t1
 
 UNRAVEL:
 ADD $t2 $one        
-SLT $four $beq2     
-SLT $four $beq1     
+SLL $four $beq2     
+SLL $four $beq1     
 
 BITLOOP:
-SLT $four $beq3     
+SLL $four $beq3     
 ADD $beq3 $t2                         
 LOAD 0 MEMORYADDRESS_UNRAVEL  
 BEQ 0 1 $load       
 AND $t2 $t4                         
 ADD $beq1 $t4       
-SLT $beq2 $beq1     
-SLT $one $t2        
+SLL $beq2 $beq1     
+SLL $one $t2        
 ADD $(t7)beq2 $one  
 LOAD 0 MEMORYADDRESS_BITLOOP    
 BEQ 0 1 $load       
 ADD $t3 $beq1      
-SLT $four $beq3     
+SLL $four $beq3     
 BEQ 0 1 $load
 
 HALT:   
