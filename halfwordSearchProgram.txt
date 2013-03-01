@@ -1,0 +1,31 @@
+
+AND 0 $zero $t4
+ADD $48 $t4
+LOAD 0 0 $negone	#compiler magic. loads from Mem[9]
+AND 0 $zero $beq1
+ADD $load $beq1
+STORE 0 $negone 	#literally storing -1 in implicit Mem[10] address
+AND 0 $zero $t2		#t2 is the count
+
+LOOP:
+LOAD 0 0 $t2
+AND 0 $zero $t3
+ADD $load $t3
+AND 1 $t3 $t3
+BEQ $beq $beq2 :DONE:
+LOAD 0 1 $t2
+AND 0 $zero $t3
+ADD $load $t3
+AND 1 $t3 $t3
+BEQ $beq $beq2 :DONE:
+
+ADD $one $t2
+AND 1 $t4 $t4
+AND 0 $t2 $beq1
+BEQ $zero $zero :LOOP:
+
+DONE:
+STORE 0 $t2
+
+STOP:
+HALT whatever.
