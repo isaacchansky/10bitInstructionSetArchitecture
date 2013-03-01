@@ -1,273 +1,50 @@
-Pseudo code loosely based on the proposed ISA for 
-our implementation of the recursive factorial problem 
-
-the registers are defined as followed:
-$t1     ->  stack pointer
-$t2     ->  temp register
-$t3     ->  temp register
-$t4     ->  temp register
-$store  ->  store register
-$beq1   ->  beq register
-$beq2   ->  beq register
-$beq3   ->  beq register
-$s1     ->  
-$47     ->  
-$flag   ->  
-$four   ->  4 
-$load   ->  implicit load register
-$negone ->  -1
-$zero   ->  0
-$one    ->  1
-    
-    *** $t1-$beq3 are the registers refered to in the ADD, SHIFT instructions
-        just because they are labeled differently, doesn't mean that they can't
-        all be used just like temporary registers for generic purposes
-
-
-
-
-==========================================
-   #initial recursion setup pseudocode#
-
- -initialize counter
--ITER: increment counter
--add looping label address to stack
--beq counter != num ITER
-
-
-GLOBAL vars:
--do not change-
-    $t1 -> stack pointer
-    $t2 -> factorial parameter
-
-temp scope vars:
-    $beq1 -> duplicate factorial parameter for comparisons
-    $beq2 -> incrementing counter to push to stack. 
-            only needed for this initial portion of code
-
-==========================================
-
-
-ADD $four $t1           # increment stack pointer by 4
- 
-STORE 1 $h              # push $h, the register storing the halt 
-                            label/line number onto stack
-ADD $num $t2            # 'store' the initial parameter 'num' into tempreg
-
-ADD $t2 $beq1           #so we can compare with our factorial number in BEQ
-
-ADD $one $beq2            # initialize function counter to 1, goes to 'num'
-                        #  you'd think it starts at zero, but if it starts at
-                        #  one, then we skip multiplying 1*1 in the recursion.
-
-ITER: 
-
-ADD $one $beq2            # increment counter
-
-ADD $four $t1           # increment stack pointer by 4
-
-STORE 1 $UNRAVEL        # 1 for stack, hardcoded line number
-
-LOAD 0 MEMORYADDRESS_ENDITER   #have to load line number of ENDITER from memory address...
-BEQ 1 0 $load      # compare factorial parameter to counter, if we've 'counted' enough, break
-
-LOAD 0 MEMORYADDRESS_ITER   #have to load line number of ITER from memory address...
-
-BEQ 0 1 $load   # if we have more iterations ahead of us, keep adding to stack. $beq3 is 0 at this point, so this is like a jump
-
-ENDITER:
-
-
-==========================================
-        #Unraveling of recursion#
-
-we're actually popping off the stack and
-doing the multiplication here.
-    i.e if our factorial is of 4
-    result = 1
-    -pop line number off stack (REC label line)
-        result*2
-    -pop line number off stack (REC label line)
-        result*3
-    -pop line number off stack (REC label line)
-        result*4
-    -pop line number off stack (HALT label line)
-    return result //its 24
-
-
-GLOBALS:
-    $t1 -> stack pointer
-    $t2 -> factorial parameter
-
-new local vars:
-    
-    $t2 -> 1 (0001)
-    $t3 -> 1 to start
-    $t4 -> 2 to start
-
-   $t2 - the 'bit detecting' register we AND with...
-            i.e starts at 0001, then shifts left by one
-                to detect the bit position for multiplication
-
-    $t3 - working product
-    $t4 - second number multiply working product by
-            i.e $t3 * $t4 is initially 1*2   
-            then $t3 becomes 2, t4 increments...
-            $t3 = 2 , $t4 = 3
-            $t3 = 6 , $t4 = 4 ...
-
-==========================================
-
-
-ADD $t3 $one        # working product (starts at 1)
-
-ADD $t4 $one        # second multiplicative
-
-ADD $t4 $one        # $t3 = two
-
-LOAD 1  $t1         #pop off top of stack(stack pointer)
-
-UNRAVEL:
-
-ADD $t2 $one        # sets up t2 to be the 'bit detecting' register used in the 'AND' part...
-
-==========================================
-Multiplying...
-
-temp variables:
-    $t2 -> still bit position variable
-    $t4 -> still mulitplicative
-    $t7 or $beq2 -> bit position counter
-    
-GLOBALS:
-    $t1 -> stack pointer
-    $t2 -> factorial parameter
-    $t3 -> working product
-==========================================
-
-
-SLL $four $beq2     #clear beq2 essentailly used as temp variable - bit position counter
-
-SLL $four $beq1     #clear beq1
-
-
-===========================================
-loops through each bit sees if we have a 1 there
-===========================================
-
-BITLOOP:
-
-SLL $four $beq3     # clear/ensure that beq is 0
-ADD $beq3 $t2       # set beq3 to whatever $t2 is, break/branch if $t2 is zero 
-                    # because we're done looking at bits
-LOAD 0 MEMORYADDRESS_UNRAVEL   #have to load line number of UNRAVEL from memory address...
-
-BEQ 0 1 $load       #break if we have shifted enought to zero out, else...
-
-AND $t2 $t4         # and with $t4, not $t3(working product) because $t4 is generally smaller
-                    # Also, need to have AND store at an implicit register, lets say its $beq3
-
-ADD $beq1 $t4       #store t4 duplicate in beq1
-
-SLL $beq2 $beq1     #shift beq1 by bit position counter to get what we're adding to the working product
-
-SLL $one $t2        # shift bit position variable left by one 
-
-ADD $(t7)beq2 $one  # increment bit counter
-
-
-LOAD 0 MEMORYADDRESS_BITLOOP    #have to load line number of BITLOOP from memory address...
-
-BEQ 0 1 $load       #comparing $zero and $beq3 (which is where we put result of AND)
-                    # essentially "if result of the AND = 0, reloop. else add to working product
-
-ADD $t3 $beq1       #add that to the working product
-
-SLL $four $beq3     #get a zero in beq3 to use for a jump
-
-BEQ 0 1 $load       #branches back to BITLOOP
-
-
-HALT:   
-
-HLT $h
-
-
-
-
-
-
-
-Notes:
-    NEED NEED NEED an easy way to do:  BEQ $zero $zero label
-        - currently, since BEQ's first paramerter is 0 or $beq1
-                    and the second parameter is beq2 or beq3
-                    AND since the implicit 'and' register is beq3, 
-                    things are getting complicated and there are a
-                    lot of maybe unneccesary clearing of registers
-                    going on. If we can get an extra bit so we can 
-                    have the second bit reference a zeroed register
-                    that would clean a ton of things up.
-
-    We need to define where AND's implicit result register is. I said
-    beq3 because we have to compare it anyway...
-
-    Also, I'm not sure how we should deal with hardcoding/not hardcoding the branches... 
-    I'm doing a weird storing and loading in memory thing, but maybe that can't be helped.
-
-
-
-
-
-
-Scary instructions without comments:
+Recursive Factorial Problem:
 
 
 *assumes $num is whatever our input is...
 
 
+$t1 -> initial factorial parameter
 
-ADD $four $t1           
-STORE 1 $h              
-ADD $num $t2            
-ADD $t2 $beq1           
-ADD $one $beq2            
+**push HALT**
+AND 0 $zero $t2
+ADD $one $t2
+AND 0 $t1 $beq1     #set beq1 = t1
 
-ITER: 
-ADD $one $beq2            
-ADD $four $t1           
-STORE 1 $UNRAVEL        
-LOAD 0 MEMORYADDRESS_ENDITER   
-BEQ 1 0 $load      
-LOAD 0 MEMORYADDRESS_ITER   
-BEQ 0 1 $load   
+INIT: 
+BEQ $beq1 $one :START:
+**push MULT**
+ADD $negOne $beq1
+BEQ $zero $zero :INIT:
 
-ENDITER:
-ADD $t3 $one        
-ADD $t4 $one        
-ADD $t4 $one       
-LOAD 1  $t1         
+START:
+ADD $one $t2        #t2 starts at 2
+AND 0 $beq1 $t1     #t1 starts at 1
+**pop stack**
 
-UNRAVEL:
-ADD $t2 $one        
-SLL $four $beq2     
-SLL $four $beq1     
+MULT:
+AND 0 $zero $t6     #clear out registers...
+AND 0 $zero $t3
+AND 0 $zero $beq2
+ADD $one $beq2      #beq2 = 1
 
-BITLOOP:
-SLL $four $beq3     
-ADD $beq3 $t2                         
-LOAD 0 MEMORYADDRESS_UNRAVEL  
-BEQ 0 1 $load       
-AND $t2 $t4                         
-ADD $beq1 $t4       
-SLL $beq2 $beq1     
-SLL $one $t2        
-ADD $(t7)beq2 $one  
-LOAD 0 MEMORYADDRESS_BITLOOP    
-BEQ 0 1 $load       
-ADD $t3 $beq1      
-SLL $four $beq3     
-BEQ 0 1 $load
+BITSHIFT:
+AND 1 $beq2 $t2     #beq3 holds the result(0 or 1)
+BEQ $zero $beq3 :INC:
+AND 0 $t1 $t5       #t5 is temp value
+SLL $t5 $t3         #shift t5 by bit position
+ADD $t5 $t6
 
-HALT:   
-HLT $h
+INC:
+ADD $one $t3
+SLL $beq2 $one
+AND 1 $t4 $t4       #since t4 is zero, this buts zero into beq3
+BEQ $zero $beq3 :END:
+BEQ $zero $zero :BITSHIFT:
+
+END:
+AND 0 $t6 $t1
+ADD $one $t2
+**pop stack**
+
+HALT:
