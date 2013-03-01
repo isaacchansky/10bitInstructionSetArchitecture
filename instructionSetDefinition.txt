@@ -45,11 +45,11 @@ $t6
 $beq1
 $zero
 $beq2
-$beq3
 $one
 $four
 $flag
 $load
+_____
 _____
 _____
 
@@ -83,10 +83,13 @@ Load ->
   LD [1 bit that gets ignored] [3 bit flag(all 1's)][register that holds stack pointer] #from stack
 
 Store -> 
-  STR [1 bit condition <memory or stack >] [6 bits to store]
+  STR [1 bit condition <memory[10] or stack>] [6 bits for offset] #mem
+        OR
+  STR [1 bit condition <memory[10] or stack>] [1 bit to store $t4 or $beq1] [5 bits] #
 
 Branch if equal -> 
-  BEQ [1 bit condition <compare <$zero or $beq1>] [ 2 bits <compare $zero $beq2 $beq3 $one>][4 bits to specify where we are jumping]
+  BEQ [1 bit condition <compare <$zero or $beq1>] [ 2 bits <compare $zero $beq2 $one>][4 bits to specify where we are jumping]
+      *** special case: if second parameter is 11, implicit branch to load
 
 Shift left -> 
   SLT [4 bit shift amount] [3 bit $register to shift]

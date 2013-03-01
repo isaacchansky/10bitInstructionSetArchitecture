@@ -25,21 +25,21 @@ AND 0 $beq1 $t1     #t1 starts at 1
 MULT:
 AND 0 $zero $t6     #clear out registers...
 AND 0 $zero $t3
-AND 0 $zero $beq2
-ADD $one $beq2      #beq2 = 1
+AND 0 $zero $t4
+ADD $one $t4      #t4 = 1
 
 BITSHIFT:
-AND 1 $beq2 $t2     #beq3 holds the result(0 or 1)
-BEQ $zero $beq3 :INC:
+AND 1 $t4 $t2     #beq2 holds the result(0 or 1)
+BEQ $zero $beq2 :INC:
 AND 0 $t1 $t5       #t5 is temp value
 SLL $t5 $t3         #shift t5 by bit position
 ADD $t5 $t6
 
 INC:
 ADD $one $t3
-SLL $beq2 $one
-AND 1 $t4 $t4       #since t4 is zero, this buts zero into beq3
-BEQ $zero $beq3 :END:
+SLL $t4 $one
+AND 1 $t4 $t4       # beq2 gets 0 if bit marker is 0
+BEQ $zero $beq2 :END:
 BEQ $zero $zero :BITSHIFT:
 
 END:
