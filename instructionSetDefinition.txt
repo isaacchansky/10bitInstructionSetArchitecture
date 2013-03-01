@@ -78,9 +78,8 @@ Add ->
        //3 bit register is one of 8 hardcoded 'add registers'
 
 Load -> 
-  LD [1 bit condition <memory or stack> ] [6 bit offset from base address]  #from mem
-          OR
-  LD [1 bit that gets ignored] [3 bit flag(all 1's)][register that holds stack pointer] #from stack
+  LOAD [0 or 1 (0 = mem, 1 = stack)] [0 or 1 (IF MEM, 0 is front of halfword, 1 is middle of halfword][5 bits used for register (have an extra)]
+
 
 Store -> 
   STR [1 bit condition <memory[10] or stack>] [6 bits for offset] #mem
