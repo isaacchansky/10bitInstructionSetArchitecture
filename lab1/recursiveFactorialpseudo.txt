@@ -1,0 +1,50 @@
+Recursive Factorial Problem:
+
+
+*assumes $num is whatever our input is...
+
+
+$t1 -> initial factorial parameter
+
+**push HALT**
+AND 0 $zero $t2
+ADD $one $t2
+AND 0 $t1 $beq1     #set beq1 = t1
+
+INIT: 
+BEQ $beq1 $one :START:
+**push MULT**
+ADD $negOne $beq1
+BEQ $zero $zero :INIT:
+
+START:
+ADD $one $t2        #t2 starts at 2
+AND 0 $beq1 $t1     #t1 starts at 1
+**pop stack**
+
+MULT:
+AND 0 $zero $t6     #clear out registers...
+AND 0 $zero $t3
+AND 0 $zero $t4
+ADD $one $t4     #t4 == 1
+
+BITSHIFT:
+AND 1 $t4 $t2     #beq3 holds the result(0 or 1)
+BEQ $zero $beq3 :INC:
+AND 0 $t1 $t5       #t5 is temp value
+SLL $t5 $t3         #shift t5 by bit position
+ADD $t5 $t6
+
+INC:
+ADD $one $t3
+SLL $t4 $one
+AND 1 $t4 $t4       #since t4 is zero, this buts zero into beq3
+BEQ $zero $beq3 :END:
+BEQ $zero $zero :BITSHIFT:
+
+END:
+AND 0 $t6 $t1
+ADD $one $t2
+**pop stack**
+
+HALT:

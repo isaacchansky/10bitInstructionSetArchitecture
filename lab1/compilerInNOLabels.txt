@@ -1,0 +1,5 @@
+and $t1, $t1
+add $t1, $t6
+beq 1, $t5, 01
+store 1, $s6
+load 1, $s6

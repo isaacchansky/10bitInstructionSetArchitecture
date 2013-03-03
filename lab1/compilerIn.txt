@@ -1,0 +1,5 @@
+Label1: and $t1, $t1
+add $t1, $t6
+beq 1, 0, Label1
+Label2: store 1, $s6
+load 1, $s6

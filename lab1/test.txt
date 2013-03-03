@@ -1,0 +1,13 @@
+AND 0, $zero, $t4
+ADD $one, $t4
+ADD $one, $t4
+ADD $one, $t4
+ADD $one, $t4
+ADD $one, $t4
+ADD $one, $t4
+TEST:
+ADD $negone, $t4
+AND 1, $t4, $t4
+BEQ $zero, $beq2, HALT:
+BEQ $zero, $zero, TEST:
+HALT:
