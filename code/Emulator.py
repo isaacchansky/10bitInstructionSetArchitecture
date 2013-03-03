@@ -3,9 +3,9 @@ import time
 
 logger = True
 errors = True
-logs = True
+logs = False
 assertions = True
-sleep = False
+sleep = True
 
 t1 = [None]
 t2 = [None]
@@ -23,8 +23,8 @@ sixteen = [16]
 fortyeight = [48]
 load = [None]
 
-mem9 = [None]
-mem10 = [None]
+#mem9 = [None]
+#mem10 = [None]
 
 # 9 and 10 are special...
 mem = []
@@ -35,14 +35,17 @@ mem[9] = "0010" # what we are searching for... hardcoded for now...
 
 #sample array to search in...
 mem[96] = "0101"
-mem[97] = "0101"
-mem[98] = "0101"
+mem[97] = "1111"
+mem[98] = "1101"
 mem[99] = "0010"
-mem[100] = "0101"
-mem[101] = "0101"
+mem[100] = "1100"
+mem[101] = "1001"
+
+#convert to integers
+for i in range(len(mem)):
+    mem[i] = int(mem[i],2)
 
 stack = []
-
 
 
 def addInstr(arg1, arg2, arg3):
@@ -72,6 +75,8 @@ def storeInstr(arg1, arg2, arg3):
     log("l", "STORE")
     if arg1 == '0':     # implicit mem[10]
         reg = registers.get(arg2[2:6])
+        message = "put "+str(reg[0])+"int mem[10]"
+        log("a", message)
         mem[10] = reg[0]
     elif arg1 == '1':
         if arg2 == '0':  # beq1
@@ -88,14 +93,28 @@ def loadInstr(arg1, arg2, arg3):
         log("l", message)
         load[0] = stack.pop()
     elif arg1 == "0":  # loading from memory
+
         if arg2 == '1':  # load from middle
-            pass    
+            #convert to binary string and format
+            w1 = bin(mem[96+t2[0]])[2:].zfill(4)
+            w2 = bin(mem[96+t2[0]+1])[2:].zfill(4)
+            word = w1[2:]+w2[:2]
+            log("a","loading from middle of word: '"+word+"'")
+            #binary string only used for merging and display... back to integers...
+            load[0] = int(word,2)
+
         elif arg2 == '0':  # load from start
-            log("a", str((arg1, arg2, arg3)))
-            #special case, if arg3 is $negone, just load from mem[9]
+
+             #special case, if arg3 is $negone, just load from mem[9]
             if arg3[1:] == "1010":
-                log("l", "loading from mem[9]")
+                log("a", "loading from mem[9]")
                 load[0] = int(mem[9])
+            else:
+                log("a", str((arg1, arg2, arg3)))
+                load[0] = mem[96+t2[0]]
+                log("a","loading from start of word: '"+bin(load[0])[2:].zfill(4)+"'")
+
+           
         else:
             message = "incorrect second argument in LOAD: ", arg1
             log("e", message)
@@ -117,8 +136,7 @@ def shiftInstr(arg1, arg2, arg3):
 
 
 def beqInstr(arg1, arg2, arg3):
-    message = "BEQ", arg3, beq1
-    log("l", message)
+    
     if arg2 == "11":  # specialcase
         message = "t1 = ",t1
         log("l", message)
@@ -141,6 +159,11 @@ def beqInstr(arg1, arg2, arg3):
             secondArgument = beq2[0]
         elif arg2 == "01":
             secondArgument = one[0]
+
+        message = "BEQ: compare "+\
+        str(firstArgument)+ " w/ "+\
+        str(secondArgument)
+        log("a", message)
 
         if firstArgument == secondArgument:
             if arg3.find("-") != -1:

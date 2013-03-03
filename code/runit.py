@@ -43,7 +43,8 @@ else:
         #inputFile = open("search.txt", "r+")
         Compiler.get_binary("search.txt")
         Emulator.exe()
-        
+        print "result = ", Emulator.mem[10]
+
     else:
         print "you're doing it wrong"
 
