@@ -24,7 +24,7 @@ HALT
 
 
 START:
-ADD $one $t2        #t2 starts at 2
+ADD $one $t2        #t2 starts at 2  missed
 AND 0 $beq1 $t1     #t1 starts at 1
 
 
@@ -58,4 +58,4 @@ AND 0 $t6 $t1
 ADD $one $t2
 ADD $negone, $beq1
 LOAD 1, 1, $beq1
-BEQ $zero, 11, $beq1
+BEQ $zero, 11, $load
