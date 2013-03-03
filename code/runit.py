@@ -4,7 +4,6 @@ import sys
 
 params = sys.argv
 
-print params[0], params[1],params[2]
 
 if(len(params) > 3):
     print "you're doing it wrong"
@@ -33,15 +32,19 @@ else:
 
         Compiler.get_binary("factorialtest.txt")
 
+        Emulator.exe()
+        print "result = ", Emulator.t1[0]
+
+
     #search testing...
 
     elif(params[1] == "search"):
         print "Search Test"
-        inputFile = open("search.txt", "r+")
-        #Compiler.get_binary("search.txt")
-
+        #inputFile = open("search.txt", "r+")
+        Compiler.get_binary("search.txt")
+        Emulator.exe()
+        
     else:
         print "you're doing it wrong"
 
-    Emulator.exe()
-    print "result = ", Emulator.t1[0]
+    

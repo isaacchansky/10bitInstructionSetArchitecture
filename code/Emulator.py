@@ -1,6 +1,12 @@
 import copy
 import time
 
+logger = True
+errors = True
+logs = True
+assertions = True
+sleep = False
+
 t1 = [None]
 t2 = [None]
 t3 = [None]
@@ -17,20 +23,38 @@ sixteen = [16]
 fortyeight = [48]
 load = [None]
 
+mem9 = [None]
 mem10 = [None]
+
+# 9 and 10 are special...
+mem = []
+for i in range(200):
+    mem.append("0000")
+
+mem[9] = "0010" # what we are searching for... hardcoded for now...
+
+#sample array to search in...
+mem[96] = "0101"
+mem[97] = "0101"
+mem[98] = "0101"
+mem[99] = "0010"
+mem[100] = "0101"
+mem[101] = "0101"
 
 stack = []
 
 
+
 def addInstr(arg1, arg2, arg3):
-    print "Add"
+    log("l", "ADD")
+    log("a", ((registers.get(arg1),registers.get(arg2),registers.get(arg3))))
     firstReg = registers.get(arg1)
     secondReg = registers.get("0" + arg2)
     secondReg[0] = secondReg[0] + firstReg[0]
 
 
 def andInstr(arg1, arg2, arg3):
-    print "AND"
+    log("l", "AND")
     firstReg = registers.get("0" + arg2)
     secondReg = registers.get("0" + arg3)
 
@@ -39,15 +63,16 @@ def andInstr(arg1, arg2, arg3):
     elif arg1 == '1':
         beq2[0] = firstReg[0] & secondReg[0]
     else:
-        print "error, incorrect first argument in AND: ", arg1
+        message = "incorrect first argument in AND: ", arg1
+        log("e", message)
         return
 
 
 def storeInstr(arg1, arg2, arg3):
-    print "STORE"
+    log("l", "STORE")
     if arg1 == '0':     # implicit mem[10]
         reg = registers.get(arg2[2:6])
-        mem10[0] = reg[0]
+        mem[10] = reg[0]
     elif arg1 == '1':
         if arg2 == '0':  # beq1
             stack.append(arg3)
@@ -56,40 +81,50 @@ def storeInstr(arg1, arg2, arg3):
 
 
 def loadInstr(arg1, arg2, arg3):
-    print "LOAD"
+    log("l", "LOAD")
     if arg1 == "1":  # load from the stack. arg2 ignored, arg3 is position
         secondReg = registers.get(arg3[1:5])
-        print stack
+        message = str(stack)
+        log("l", message)
         load[0] = stack.pop()
     elif arg1 == "0":  # loading from memory
         if arg2 == '1':  # load from middle
-            pass
+            pass    
         elif arg2 == '0':  # load from start
-            pass
+            log("a", str((arg1, arg2, arg3)))
+            #special case, if arg3 is $negone, just load from mem[9]
+            if arg3[1:] == "1010":
+                log("l", "loading from mem[9]")
+                load[0] = int(mem[9])
         else:
-            print "error, incorrect second argument in LOAD: ", arg1
+            message = "incorrect second argument in LOAD: ", arg1
+            log("e", message)
             return
     else:
-        print "error, incorrect first argument in LOAD: ", arg1
+        message = "incorrect first argument in LOAD: ", arg1
+        log("e", message)
         return
 
 
 def shiftInstr(arg1, arg2, arg3):
-    print "shift"
+    log("l", "SHIFT")
     firstReg = registers.get(arg1)  # shift amaount
     secondReg = registers.get("0" + arg2)
     secondReg[0] = secondReg[0] << firstReg[0]
     if secondReg[0] > 65536:
         secondReg[0] = 0
-        print "hereasdlkfh;ffffffffffffff"
+        log("l", "zeroed out register via shift")
 
 
 def beqInstr(arg1, arg2, arg3):
-    print "BEQ", arg3, beq1
+    message = "BEQ", arg3, beq1
+    log("l", message)
     if arg2 == "11":  # specialcase
-        print t1, "t1"
-        reg = registers.get(arg3[0:4])  # shift amaount
-        print reg[0], "!!!"
+        message = "t1 = ",t1
+        log("l", message)
+        reg = registers.get(arg3[0:4])  # shift amount
+        message = reg[0], "!!!"
+        log("l", message)
         if reg[0] == 1:
             return 1
         else:
@@ -107,27 +142,22 @@ def beqInstr(arg1, arg2, arg3):
         elif arg2 == "01":
             secondArgument = one[0]
 
-#        print firstArgument, secondArgument
-
         if firstArgument == secondArgument:
             if arg3.find("-") != -1:
-#                print "returned", -1-int(arg3[0:4], 2)
                 return -1-int(arg3[0:4], 2)
             else:
-#                print "returned", int(arg3[0:4], 2)
                 return int(arg3[0:4], 2)-1
         else:
-#            print 0
             return 0
 
 
 def haltInstr(arg1, arg2, arg3):
-    print "halted"
+    log("l", "HALTED")
     return
 
 
 def tbdInstr(arg1, arg2, arg3):
-    print "tbd"
+    log("l", "TBD")
 
 
 
@@ -177,12 +207,15 @@ def exe():
 
     programCount = 1
     lines = prog.readlines()
-    print lines
+    message = str(lines)
+    log("l", message)
     progLength = len(lines)
 
     while programCount <= progLength:
-#        time.sleep(.1)
-        print programCount
+        if sleep:
+            time.sleep(0.1)
+        message = str(programCount)
+        log("l", message)
         line = lines[programCount-1]
         programCount += 1
         op = line[0:3]
@@ -224,17 +257,47 @@ def exe():
                 else:
                     programCount += func(arg1, arg2, arg3)
             elif func == haltInstr:
-                print "DONE", t1
+                message = "DONE, t1 = ", t1
+                log("a", message)
+                log("l", message)
                 return
             else:
                 func(arg1, arg2, arg3)
-#            except Exception as inst:
-#                print "Error executing ", func.__name__, " on line", programCount," :", inst
-#                return
-        else:
-            print "Error on line ", programCount, " unknown function call: ", op
 
+        else:
+            message = "Error on line ", programCount, " unknown function call: ", op
+            log("e", message)
     pass
+
+def log(type, arg):
+    if logger:
+        if type == "e" and errors:
+            print "ERR: ",arg
+        elif type == "a" and assertions:
+            print ">>> ", arg
+        elif type == "l" and logs:
+             print  ">",arg
+
+def logAll():
+    print "REGISTERS:\n",\
+    "t1 = ", registers.get("0000"),"\n",\
+    "t2 = ", registers.get("0001"),"\n",\
+    "t3 = ", registers.get("0010"),"\n",\
+    "t4 = ", registers.get("0011"),"\n",\
+    "t5 = ", registers.get("0100"),"\n",\
+    "t6 = ", registers.get("0101"),"\n",\
+    "beq1 = ", registers.get("0110"),"\n",\
+    "zero = ", registers.get("0111"),"\n",\
+    "beq2 = ", registers.get("1000"),"\n",\
+    "one = ", registers.get("1001"),"\n",\
+    "negone = ", registers.get("1010"),"\n",\
+    "nine = ", registers.get("1011"),"\n",\
+    "sixteen = ", registers.get("1100"),"\n",\
+    "fortyeight = ", registers.get("1101"),"\n",\
+    "load = ", registers.get("1110"),"\n"
+
+
+
 if __name__ == '__main__':
     exe()
-    print "result = ", t1[0]
+

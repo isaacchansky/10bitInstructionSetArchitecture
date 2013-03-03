@@ -1,3 +1,4 @@
+
 AND 0 $zero $t4
 ADD $fortyeight $t4
 LOAD 0 0 $negone    #compiler magic. loads from Mem[9]
@@ -27,4 +28,4 @@ DONE:
 STORE 0 $t2
 
 STOP:
-HALT whatever.
+HALT 
