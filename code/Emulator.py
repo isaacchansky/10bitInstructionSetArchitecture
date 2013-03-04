@@ -5,7 +5,7 @@ logger = True
 errors = True
 logs = False
 assertions = True
-sleep = True
+sleep = False
 
 t1 = [None]
 t2 = [None]
@@ -31,7 +31,7 @@ mem = []
 for i in range(200):
     mem.append("0000")
 
-mem[9] = "0010" # what we are searching for... hardcoded for now...
+mem[9] = "1001" # what we are searching for... hardcoded for now...
 
 #sample array to search in...
 mem[96] = "0101"
