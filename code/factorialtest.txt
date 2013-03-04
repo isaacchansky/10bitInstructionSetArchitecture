@@ -11,6 +11,10 @@ ADD $one, $t1
 ADD $one, $t1
 ADD $one, $t1
 ADD $one, $t1
+ADD $one, $t1
+ADD $one, $t1
+ADD $one, $t1
+ADD $one, $t1
 
 AND 0 $zero, $t4
 STORE 1, 1, HALT:

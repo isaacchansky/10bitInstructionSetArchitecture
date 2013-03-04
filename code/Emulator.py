@@ -2,9 +2,9 @@ import copy
 import time
 
 logger = True
-errors = True
+errors = False
 logs = False
-assertions = True
+assertions = False
 sleep = False
 
 t1 = [None]
@@ -31,7 +31,7 @@ mem = []
 for i in range(200):
     mem.append("0000")
 
-mem[9] = "1001" # what we are searching for... hardcoded for now...
+mem[9] = "0100" # what we are searching for... hardcoded for now...
 
 #sample array to search in...
 mem[96] = "0101"
@@ -89,7 +89,7 @@ def loadInstr(arg1, arg2, arg3):
     log("l", "LOAD")
     if arg1 == "1":  # load from the stack. arg2 ignored, arg3 is position
         secondReg = registers.get(arg3[1:5])
-        message = str(stack)
+        message = "stack: "+str(stack)
         log("l", message)
         load[0] = stack.pop()
     elif arg1 == "0":  # loading from memory
@@ -141,7 +141,7 @@ def beqInstr(arg1, arg2, arg3):
         message = "t1 = ",t1
         log("l", message)
         reg = registers.get(arg3[0:4])  # shift amount
-        message = reg[0], "!!!"
+        message = "shamt "+str(reg[0])
         log("l", message)
         if reg[0] == 1:
             return 1
@@ -227,17 +227,19 @@ registers = {"0000": t1,
 
 def exe():
     prog = open("compilerOut.txt", "r")
-
+    instructionCount = 0
     programCount = 1
     lines = prog.readlines()
-    message = str(lines)
+    message = "lines "+str(lines)
     log("l", message)
     progLength = len(lines)
 
     while programCount <= progLength:
+        instructionCount += 1
+        log('l', "IC = "+str(instructionCount))
         if sleep:
             time.sleep(0.1)
-        message = str(programCount)
+        message = "PC = "+str(programCount)
         log("l", message)
         line = lines[programCount-1]
         programCount += 1

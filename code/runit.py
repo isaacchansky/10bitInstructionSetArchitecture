@@ -4,10 +4,24 @@ import sys
 
 params = sys.argv
 
+# set flags
 
-if(len(params) > 3):
+
+if(len(params) > 4):
     print "you're doing it wrong"
 else:
+
+    # set flags
+    if(len(params) > 3):
+        flags = params[3]
+        if('a' in flags):
+            Emulator.assertions = True
+        if('e' in flags):
+            Emulator.errors = True
+        if('l' in flags):
+            Emulator.logs = True
+        if('s' in flags):
+            Emulator.sleep = True
 
     #factorial testing...
 
