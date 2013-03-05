@@ -6,13 +6,15 @@ params = sys.argv
 
 # set flags
 
-
+print len(params)
 if(len(params) > 4):
     print "you're doing it wrong"
 else:
 
-    # set flags
-    if(len(params) > 3):
+    #factorial testing...
+
+    if(params[1] == "factorial"):
+
         flags = params[3]
         if('a' in flags):
             Emulator.assertions = True
@@ -22,10 +24,9 @@ else:
             Emulator.logs = True
         if('s' in flags):
             Emulator.sleep = True
+        if('v' in flags):
+            Emulator.verboseLog = True
 
-    #factorial testing...
-
-    if(params[1] == "factorial"):
         print "Factorial Test"
         number = int(params[2])
         inputFile = open("factorialtemplate.txt", "r+")
@@ -53,6 +54,19 @@ else:
     #search testing...
 
     elif(params[1] == "search"):
+
+        flags = params[2]
+        if('a' in flags):
+            Emulator.assertions = True
+        if('e' in flags):
+            Emulator.errors = True
+        if('l' in flags):
+            Emulator.logs = True
+        if('s' in flags):
+            Emulator.sleep = True
+        if('v' in flags):
+            Emulator.verboseLog = True
+
         print "Search Test"
         #inputFile = open("search.txt", "r+")
         Compiler.get_binary("search.txt")

@@ -6,6 +6,7 @@ errors = False
 logs = False
 assertions = False
 sleep = False
+verboseLog = False
 
 t1 = [None]
 t2 = [None]
@@ -29,17 +30,17 @@ load = [None]
 # 9 and 10 are special...
 mem = []
 for i in range(200):
-    mem.append("0000")
+    mem.append("00000000")
 
-mem[9] = "0100" # what we are searching for... hardcoded for now...
+mem[9] = "01000010" # what we are searching for... hardcoded for now...
 
 #sample array to search in...
-mem[96] = "0101"
-mem[97] = "1111"
-mem[98] = "1101"
-mem[99] = "0010"
-mem[100] = "1100"
-mem[101] = "1001"
+mem[96] = "01000000"
+mem[97] = "11110011"
+mem[98] = "11010100"
+mem[99] = "00101001"
+mem[100] = "11000110"
+mem[101] = "10010010"
 
 #convert to integers
 for i in range(len(mem)):
@@ -96,9 +97,9 @@ def loadInstr(arg1, arg2, arg3):
 
         if arg2 == '1':  # load from middle
             #convert to binary string and format
-            w1 = bin(mem[96+t2[0]])[2:].zfill(4)
-            w2 = bin(mem[96+t2[0]+1])[2:].zfill(4)
-            word = w1[2:]+w2[:2]
+            w1 = bin(mem[96+t2[0]])[2:].zfill(8)
+            w2 = bin(mem[96+t2[0]+1])[2:].zfill(8)
+            word = w1[4:]+w2[:4]
             log("a","loading from middle of word: '"+word+"'")
             #binary string only used for merging and display... back to integers...
             load[0] = int(word,2)
@@ -112,7 +113,7 @@ def loadInstr(arg1, arg2, arg3):
             else:
                 log("a", str((arg1, arg2, arg3)))
                 load[0] = mem[96+t2[0]]
-                log("a","loading from start of word: '"+bin(load[0])[2:].zfill(4)+"'")
+                log("a","loading from start of word: '"+bin(load[0])[2:].zfill(8)+"'")
 
            
         else:
@@ -131,7 +132,9 @@ def shiftInstr(arg1, arg2, arg3):
     secondReg = registers.get("0" + arg2)
     secondReg[0] = secondReg[0] << firstReg[0]
     if secondReg[0] > 65536:
-        secondReg[0] = 0
+        # convert to binary, get rightmost 16 bits, convert back
+        binaryNum = bin(secondReg[0])[2:][-16:]
+        secondReg[0] = int(binaryNum, 2)    #convert back to integer before assigning
         log("l", "zeroed out register via shift")
 
 
@@ -237,8 +240,11 @@ def exe():
     while programCount <= progLength:
         instructionCount += 1
         log('l', "IC = "+str(instructionCount))
-        if sleep:
-            time.sleep(0.1)
+        
+        if verboseLog:  logAll()
+        
+        if sleep:   time.sleep(0.1)
+        
         message = "PC = "+str(programCount)
         log("l", message)
         line = lines[programCount-1]
