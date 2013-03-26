@@ -32,7 +32,7 @@ mem = []
 for i in range(200):
     mem.append("00000000")
 
-mem[9] = "01000010" # what we are searching for... hardcoded for now...
+mem[9] = "11111111" # what we are searching for... hardcoded for now...
 
 #sample array to search in...
 mem[96] = "01000000"
@@ -41,12 +41,50 @@ mem[98] = "11010100"
 mem[99] = "00101001"
 mem[100] = "11000110"
 mem[101] = "10010010"
+mem[102] = "00101001"
+mem[103] = "11000110"
+mem[104] = "10010010"
+mem[105] = "01000000"
+mem[106] = "11110011"
+mem[107] = "11010100"
+mem[108] = "00101001"
+mem[109] = "11000110"
+mem[110] = "10010010"
+mem[111] = "00101001"
+mem[112] = "11000110"
+mem[113] = "10010010"
+mem[114] = "01000000"
+mem[115] = "11110011"
+mem[116] = "11010100"
+mem[117] = "00101001"
+mem[118] = "11000110"
+mem[119] = "10010010"
+mem[120] = "00101001"
+mem[121] = "11000110"
+mem[122] = "10010010"
+mem[123] = "01000000"
+mem[124] = "11110011"
+mem[125] = "11010100"
+mem[126] = "00101001"
+mem[127] = "11000110"
+mem[128] = "10010010"
+mem[129] = "00101001"
+mem[130] = "11000110"
+mem[131] = "10010010"
+mem[132] = "11000110"
+mem[133] = "10010010"
+mem[134] = "11000110"
+mem[135] = "10010010"
+mem[136] = "11000110"
+mem[137] = "11000110"
+mem[138] = "11111111"
+
 
 #convert to integers
 for i in range(len(mem)):
     mem[i] = int(mem[i],2)
-
 stack = []
+
 
 
 def addInstr(arg1, arg2, arg3):
@@ -115,7 +153,7 @@ def loadInstr(arg1, arg2, arg3):
                 load[0] = mem[96+t2[0]]
                 log("a","loading from start of word: '"+bin(load[0])[2:].zfill(8)+"'")
 
-           
+
         else:
             message = "incorrect second argument in LOAD: ", arg1
             log("e", message)
@@ -139,7 +177,7 @@ def shiftInstr(arg1, arg2, arg3):
 
 
 def beqInstr(arg1, arg2, arg3):
-    
+
     if arg2 == "11":  # specialcase
         message = "t1 = ",t1
         log("l", message)
@@ -166,7 +204,7 @@ def beqInstr(arg1, arg2, arg3):
         message = "BEQ: compare "+\
         str(firstArgument)+ " w/ "+\
         str(secondArgument)
-        log("a", message)
+        log("l", message)
 
         if firstArgument == secondArgument:
             if arg3.find("-") != -1:
@@ -240,11 +278,12 @@ def exe():
     while programCount <= progLength:
         instructionCount += 1
         log('l', "IC = "+str(instructionCount))
-        
-        if verboseLog:  logAll()
-        
-        if sleep:   time.sleep(0.1)
-        
+
+        if verboseLog:
+            logAll()
+        if sleep:
+            time.sleep(0.5)
+
         message = "PC = "+str(programCount)
         log("l", message)
         line = lines[programCount-1]

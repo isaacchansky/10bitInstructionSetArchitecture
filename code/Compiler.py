@@ -32,8 +32,8 @@ def get_binary(progIn):
 
     count = 1
     labels = {}
-
     data = progIn.readlines()
+
     for x in range(len(data)):
         count += 1
         inputLine = data[x].split()
@@ -53,7 +53,7 @@ def get_binary(progIn):
     print labels
     for line in data:
 
-        if labels.has_key(line) or line == '\n':
+        if line in labels or line == '\n':
             continue
 
         count += 1
@@ -70,7 +70,7 @@ def get_binary(progIn):
             inputLine[x] = inputLine[x].replace(",", "")
 
             if x == 0:
-                if not(opcodes.has_key(inputLine[x])):
+                if not(inputLine[x] in opcodes):
                     print "Error on line", count, ":", "\n    unknown instruction ", inputLine[x]
                     return
                 outputLine.append(opcodes.get(inputLine[x]))
@@ -91,6 +91,7 @@ def get_binary(progIn):
                         print "Error on line", count, ":", "\n    first arg of an AND instr must be a 1 or 0, got ", [inputLine[x]]
                         return
                     outputLine.append(inputLine[x])
+
                 if x == 2:
                     if inputLine[x][1] != 't' and inputLine[x] != '$zero' and inputLine[x] != '$beq1':
                         print "Error on line", count, ":\n    second arg of an AND instr must be reg 1-8, got ", [inputLine[x]]
@@ -112,7 +113,7 @@ def get_binary(progIn):
                         return
 
                 if x == 1:
-                    if not(registers.has_key(inputLine[x])):
+                    if not(inputLine[x] in registers):
                         print "Error on line", count, ":\n    second arg of an ADD/SHIFT instr must be a reg, got", [inputLine[x]]
                         return
                     outputLine.append(registers.get(inputLine[x]))
@@ -142,7 +143,7 @@ def get_binary(progIn):
                     outputLine.append(inputLine[x])
 
                 if x == 3:
-                    if not(registers.has_key(inputLine[x])):
+                    if not(inputLine[x] in registers):
                         print "Error on line", count, ":\n    third arg of a LOAD instr must be a reg, got", [inputLine[x]]
                         return
 
@@ -173,7 +174,7 @@ def get_binary(progIn):
                             print "Error on line", count, ":", "\n    wrong number of args for a STORE to MEM instr"
                             return
 
-                        if not(registers.has_key(inputLine[x])):
+                        if not(inputLine[x] in registers):
                             print "Error on line", count, ":\n    third arg of a LOAD instr must be a reg, got", [inputLine[x]]
                             return
 
@@ -181,7 +182,7 @@ def get_binary(progIn):
 
                 if x == 3:  # must be storing to stack
                     if inputLine[1] == '1':
-                        if not(labels.has_key(inputLine[x]+'\n')):
+                        if not((inputLine[x]+'\n') in labels):
                             print "Error on line", count, ":", "\n    unknown label to STORE to STACK, got ", [inputLine[x]]
                             return
                         print count
@@ -227,12 +228,12 @@ def get_binary(progIn):
                         num = num[2:len(num)]
                         if int(labels.get(inputLine[x] + '\n'), 2) < count:
                             num += "-"
-                        if not(labels.has_key(inputLine[x]+'\n')):
+                        if not((inputLine[x]+'\n') in labels):
                             print "Error on line", count, ":", "\n    unknown label for BEQ, got ", [inputLine[x]]
                             return
                         outputLine.append(num)
                     else:
-                        if not(registers.has_key(inputLine[x])):
+                        if not(inputLine[x] in registers):
                             print "Error on line", count, ":\n    last arg of special case BEQ must be a reg, got", [inputLine[x]]
                             return
                         outputLine.append(registers.get(inputLine[x]))
