@@ -2,6 +2,7 @@ import Emulator
 import Compiler
 import sys
 
+
 params = sys.argv
 
 # set flags

@@ -1,7 +1,10 @@
-AND 0 $zero, $t1
-ADD $one, $t1
-ADD $one, $t1
-ADD $one, $t1
+#AND 0 $zero, $t1
+#ADD $one, $t1
+#ADD $one, $t1
+#ADD $one, $t1
+LOAD 0 0 $negone    # implicit loading
+AND 0 $zero $t1
+ADD $load $t1       #put the factorial input into t1
 
 AND 0 $zero, $t4
 STORE 1, 1, HALT:
@@ -20,6 +23,7 @@ ADD $negone $beq1
 BEQ $zero $zero INIT:
 
 HALT:
+STORE 0 $t1
 HALT
 
 

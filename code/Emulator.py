@@ -32,10 +32,11 @@ mem = []
 for i in range(200):
     mem.append("00000000")
 
-mem[9] = "11111111" # what we are searching for... hardcoded for now...
+#mem[9] = "11111111" # search string parameter
+mem[9] = "00000011"
 
 #sample array to search in...
-mem[96] = "01000000"
+mem[96] = "01001111"
 mem[97] = "11110011"
 mem[98] = "11010100"
 mem[99] = "00101001"
@@ -76,8 +77,8 @@ mem[133] = "10010010"
 mem[134] = "11000110"
 mem[135] = "10010010"
 mem[136] = "11000110"
-mem[137] = "11000110"
-mem[138] = "11111111"
+mem[137] = "01011111"
+mem[138] = "11110000"
 
 
 #convert to integers
@@ -114,7 +115,8 @@ def storeInstr(arg1, arg2, arg3):
     log("l", "STORE")
     if arg1 == '0':     # implicit mem[10]
         reg = registers.get(arg2[2:6])
-        message = "put "+str(reg[0])+"int mem[10]"
+        message = "put "+str(reg[0])+"into mem[10]"
+        print message
         log("a", message)
         mem[10] = reg[0]
     elif arg1 == '1':
@@ -133,26 +135,28 @@ def loadInstr(arg1, arg2, arg3):
         load[0] = stack.pop()
     elif arg1 == "0":  # loading from memory
 
+        #<<<REMOVED>>>
+        '''
         if arg2 == '1':  # load from middle
             #convert to binary string and format
             w1 = bin(mem[96+t2[0]])[2:].zfill(8)
             w2 = bin(mem[96+t2[0]+1])[2:].zfill(8)
             word = w1[4:]+w2[:4]
-            log("a","loading from middle of word: '"+word+"'")
+            log("a", "loading from middle of word: '"+word+"'")
             #binary string only used for merging and display... back to integers...
-            load[0] = int(word,2)
+            load[0] = int(word, 2)
+        '''
 
-        elif arg2 == '0':  # load from start
+        if arg2 == '0':  # load word
 
-             #special case, if arg3 is $negone, just load from mem[9]
+            #special case, if arg3 is $negone, just load from mem[9]
             if arg3[1:] == "1010":
                 log("a", "loading from mem[9]")
                 load[0] = int(mem[9])
             else:
                 log("a", str((arg1, arg2, arg3)))
                 load[0] = mem[96+t2[0]]
-                log("a","loading from start of word: '"+bin(load[0])[2:].zfill(8)+"'")
-
+                log("a", "loading from start of word: '"+bin(load[0])[2:].zfill(8)+"'")
 
         else:
             message = "incorrect second argument in LOAD: ", arg1
@@ -177,7 +181,6 @@ def shiftInstr(arg1, arg2, arg3):
 
 
 def beqInstr(arg1, arg2, arg3):
-
     if arg2 == "11":  # specialcase
         message = "t1 = ",t1
         log("l", message)
@@ -220,8 +223,22 @@ def haltInstr(arg1, arg2, arg3):
     return
 
 
-def tbdInstr(arg1, arg2, arg3):
-    log("l", "TBD")
+def joinInstr(arg1, arg2, arg3):
+    reg1 = registers.get(arg1[0:4])
+    reg2 = registers.get("0" +arg2[0:4])
+
+
+    firstHalf = bin(reg2[0])
+    ind = firstHalf.find("b")
+    firstHalf = firstHalf[ind+1:len(firstHalf)].zfill(8)
+
+    secondHalf = bin(reg1[0])
+    ind = secondHalf.find("b")
+    secondHalf = secondHalf[ind+1:len(secondHalf)].zfill(8)
+
+    result = firstHalf[4:8] + secondHalf[0:4]
+    reg2[0] = int(result, 2)
+    log("l", "JOIN")
 
 
 
@@ -239,7 +256,7 @@ opcodes   = {"000": addInstr,
              "100": shiftInstr,
              "101": beqInstr,
              "110": haltInstr,
-             "111": tbdInstr,
+             "111": joinInstr,
              }
 
 registers = {"0000": t1,
@@ -290,9 +307,9 @@ def exe():
         programCount += 1
         op = line[0:3]
         func = opcodes.get(op)
-
+        print func
         arg1, arg2, arg3 = None, None, None
-        if (opcodes.get(op) == addInstr) or (opcodes.get(op) == shiftInstr):
+        if (opcodes.get(op) == addInstr) or (opcodes.get(op) == shiftInstr) or (opcodes.get(op) == joinInstr) :
             arg1 = line[3:7]
             arg2 = line[7:10]
 
@@ -330,6 +347,8 @@ def exe():
                 message = "DONE, t1 = ", t1
                 log("a", message)
                 log("l", message)
+                print instructionCount
+                print "mem[10] = ", mem[10]
                 return
             else:
                 func(arg1, arg2, arg3)
@@ -346,7 +365,7 @@ def log(type, arg):
         elif type == "a" and assertions:
             print ">>> ", arg
         elif type == "l" and logs:
-             print  ">",arg
+            print  ">",arg
 
 def logAll():
     print "REGISTERS:\n",\
@@ -370,4 +389,3 @@ def logAll():
 
 if __name__ == '__main__':
     exe()
-

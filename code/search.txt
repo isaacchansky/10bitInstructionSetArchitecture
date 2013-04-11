@@ -5,23 +5,22 @@ AND 0 $zero $beq1
 ADD $load $beq1
 STORE 0 $negone     #literally storing -1 in implicit Mem[10] address
 AND 0 $zero $t2     #t2 is the count
+LOAD 0 0 $t2 #load for first iteration
 
 LOOP:
-LOAD 0 0 $t2
 AND 0 $zero $t3
-ADD $load $t3
+ADD $load $t3 #use load from second half of this loop from previous iteration
 AND 1 $t3 $t3
 BEQ $beq1 $beq2 DONE:
-LOAD 0 1 $t2
-AND 0 $zero $t3
-ADD $load $t3
-AND 1 $t3 $t3
-BEQ $beq1 $beq2 DONE:
-
 ADD $one $t2
-AND 1 $t4 $t4
-BEQ $zero $zero LOOP:
+LOAD 0 0 $t2
+JOIN $load, $t3 #t3 will now be [second half of t3][first half of load]
+AND 1 $t3 $t3
+BEQ $beq1 $beq2 DONE1:
 
+BEQ $zero $zero LOOP:
+DONE1:
+ADD $negone, $t2
 DONE:
 STORE 0 $t2
 
