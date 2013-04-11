@@ -32,8 +32,8 @@ mem = []
 for i in range(200):
     mem.append("00000000")
 
-#mem[9] = "11111111" # search string parameter
-mem[9] = "00000011"
+mem[0] = "00000100"
+mem[9] = "11111111"  # search string parameter
 
 #sample array to search in...
 mem[96] = "01001111"
@@ -135,17 +135,10 @@ def loadInstr(arg1, arg2, arg3):
         load[0] = stack.pop()
     elif arg1 == "0":  # loading from memory
 
-        #<<<REMOVED>>>
-        '''
-        if arg2 == '1':  # load from middle
-            #convert to binary string and format
-            w1 = bin(mem[96+t2[0]])[2:].zfill(8)
-            w2 = bin(mem[96+t2[0]+1])[2:].zfill(8)
-            word = w1[4:]+w2[:4]
-            log("a", "loading from middle of word: '"+word+"'")
-            #binary string only used for merging and display... back to integers...
-            load[0] = int(word, 2)
-        '''
+        #CHANGED: if arg2 is 1, load from memory 0
+        if arg2 == '1':
+            load[0] = mem[0]
+
 
         if arg2 == '0':  # load word
 

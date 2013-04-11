@@ -1,8 +1,5 @@
-#AND 0 $zero, $t1
-#ADD $one, $t1
-#ADD $one, $t1
-#ADD $one, $t1
-LOAD 0 0 $negone    # implicit loading
+
+LOAD 0 1 $zero    # implicit loading
 AND 0 $zero $t1
 ADD $load $t1       #put the factorial input into t1
 
