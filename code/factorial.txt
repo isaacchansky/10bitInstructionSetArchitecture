@@ -20,7 +20,7 @@ ADD $negone $beq1
 BEQ $zero $zero INIT:
 
 HALT:
-STORE 0 $t1
+STORE 0 0 $t1
 HALT
 
 

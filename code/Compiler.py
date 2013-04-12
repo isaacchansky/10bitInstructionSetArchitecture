@@ -166,7 +166,24 @@ def get_binary(progIn):
                         outputLine.append(inputLine[x])
 
                     else:
-                        if len(inputLine) != 3:
+                        '''
+
+
+
+
+
+
+                         HERE
+
+
+
+
+
+
+
+
+                        '''
+                        if len(inputLine) != 4:
                             print "Error on line", count, ":", "\n    wrong number of args for a STORE to MEM instr"; return
 
                         if not(registers.has_key(inputLine[x])):

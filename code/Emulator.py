@@ -113,12 +113,19 @@ def andInstr(arg1, arg2, arg3):
 
 def storeInstr(arg1, arg2, arg3):
     log("l", "STORE")
-    if arg1 == '0':     # implicit mem[10]
-        reg = registers.get(arg2[2:6])
-        message = "put "+str(reg[0])+"into mem[10]"
-        print message
-        log("a", message)
-        mem[10] = reg[0]
+    if arg1 == '0':     # implicit mem
+        if arg2 == '0':
+            reg = registers.get(arg2[2:6])
+            message = "put "+str(reg[0])+"into mem[0]"
+            print message
+            log("a", message)
+            mem[0] = reg[0]
+        if arg2 == '1':
+            reg = registers.get(arg2[2:6])
+            message = "put "+str(reg[0])+"into mem[10]"
+            print message
+            log("a", message)
+            mem[10] = reg[0]
     elif arg1 == '1':
         if arg2 == '0':  # beq1
             stack.append(arg3)
@@ -342,6 +349,7 @@ def exe():
                 log("l", message)
                 print instructionCount
                 print "mem[10] = ", mem[10]
+                print "mem[0] = ", mem[10]
                 return
             else:
                 func(arg1, arg2, arg3)

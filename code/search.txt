@@ -22,7 +22,7 @@ BEQ $zero $zero LOOP:
 DONE1:
 ADD $negone, $t2
 DONE:
-STORE 0 $t2
+STORE 0 1 $t2
 
 STOP:
 HALT 
